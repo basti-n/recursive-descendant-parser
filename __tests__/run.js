@@ -1,10 +1,10 @@
 /** Main Test Runner */
 
-const { Parser } = require("../src/parser");
+const { Parser } = require('../src/parser');
 
 const parser = new Parser();
 
-const program = "42";
+const program = '"Hello';
 
 const ast = parser.parse(program);
 
