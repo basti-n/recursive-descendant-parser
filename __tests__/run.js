@@ -4,7 +4,12 @@ const { Parser } = require('../src/parser');
 
 const parser = new Parser();
 
-const program = '"Hello';
+const program = `
+    /**
+     * Hello World
+     */
+    "Hello Back"
+`;
 
 const ast = parser.parse(program);
 
