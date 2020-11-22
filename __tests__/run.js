@@ -32,7 +32,6 @@ exec();
 
 function test(program, expected) {
   const ast = parser.parse(program);
-  console.log(JSON.stringify(ast, null, 2));
   assert.deepStrictEqual(ast, expected);
 }
 
