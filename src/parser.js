@@ -32,10 +32,53 @@ class Parser {
    * Main Entry Point
    *
    * Programm
-   *    : NumericLiteral
+   *    : StatementList
    */
   Program() {
-    return { type: 'Program', body: this.Literal() };
+    return { type: 'Program', body: this.StatementList() };
+  }
+
+  /**
+   * Statement List
+   *  : Statement
+   *  | StatementList Statement
+   */
+  StatementList() {
+    const statementList = [this.Statement()];
+
+    while (this._lookahead != null) {
+      statementList.push(this.Statement());
+    }
+
+    return statementList;
+  }
+
+  /**
+   * Statement
+   *  : ExpressionStatement
+   */
+  Statement() {
+    return this.ExpressionStatement();
+  }
+
+  /**
+   * ExpressionStatement
+   *  : Expression ;
+   */
+  ExpressionStatement() {
+    const expression = this.Expression();
+    this._eat(';');
+    return {
+      type: 'ExpressionStatement',
+      expression,
+    };
+  }
+
+  /**
+   * Expression
+   */
+  Expression() {
+    return this.Literal();
   }
 
   /**

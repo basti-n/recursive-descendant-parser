@@ -11,6 +11,9 @@ const specs = [
   // Skip Multi-Line Comment
   [null, /^\/\*[\s\S]*?\*\//],
 
+  // Symbols & Delimiters
+  [';', /^;/],
+
   ['NUMBER', /^\d+/],
   ['STRING', /^"[^"]*"/],
   ['STRING', /^'[^']*'/],
