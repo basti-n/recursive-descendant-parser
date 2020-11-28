@@ -13,6 +13,8 @@ const specs = [
 
   // Symbols & Delimiters
   [';', /^;/],
+  ['{', /^\{/],
+  ['}', /^\}/],
 
   ['NUMBER', /^\d+/],
   ['STRING', /^"[^"]*"/],
