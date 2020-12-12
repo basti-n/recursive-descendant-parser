@@ -43,10 +43,10 @@ class Parser {
    *  : Statement
    *  | StatementList Statement
    */
-  StatementList(stopLookAhead = null) {
+  StatementList() {
     const statementList = [this.Statement()];
 
-    while (this._lookahead != null && this._lookahead.type !== stopLookAhead) {
+    while (this._lookahead != null) {
       statementList.push(this.Statement());
     }
 
@@ -55,50 +55,10 @@ class Parser {
 
   /**
    * Statement
-   *  | ExpressionStatement
-   *  : BlockStatement
-   *  ; EmptyStatement
+   *  : ExpressionStatement
    */
   Statement() {
-    switch (this._lookahead.type) {
-      case ';':
-        return this.EmptyStatement();
-
-      case '{':
-        return this.BlockStatement();
-
-      default:
-        return this.ExpressionStatement();
-    }
-  }
-
-  /**
-   * EmptyStatement
-   *  : ';'
-   */
-  EmptyStatement() {
-    this._eat(';');
-
-    return {
-      type: 'EmptyStatement',
-    };
-  }
-
-  /**
-   * BlockStatement
-   *  : '{' OptStatementList '}'
-   */
-  BlockStatement() {
-    this._eat('{');
-
-    const body = this._lookahead.type !== '}' ? this.StatementList('}') : [];
-
-    this._eat('}');
-
-    return {
-      type: 'BlockStatement',
-      body,
-    };
+    return this.ExpressionStatement();
   }
 
   /**
@@ -118,7 +78,32 @@ class Parser {
    * Expression
    */
   Expression() {
-    return this.Literal();
+    return this.AdditiveExpression();
+  }
+
+  /**
+   * AdditiveExpression
+   *  :Literal
+   *  |AdditiveLiteral ADDITIVE_OPERATOR Literal
+   */
+  AdditiveExpression() {
+    let left = this.Literal();
+
+    while (this._lookahead.type === 'ADDITIVE_OPERATOR') {
+      // operator +, -
+      const operator = this._eat('ADDITIVE_OPERATOR').value;
+
+      const right = this.Literal();
+
+      left = {
+        type: 'BinaryExpression',
+        operator,
+        left,
+        right,
+      };
+    }
+
+    return left;
   }
 
   /**
@@ -127,6 +112,7 @@ class Parser {
    *  : Numberliteral
    */
   Literal() {
+    console.log(this._lookahead.type, this._lookahead, this._string);
     switch (this._lookahead.type) {
       case 'NUMBER':
         return this.NumericLiteral();

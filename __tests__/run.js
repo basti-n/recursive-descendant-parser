@@ -13,6 +13,7 @@ const tests = [
   require('./statement-list.tests'),
   require('./block-tests.js'),
   require('./empty-tests.js'),
+  require('./math-tests.js'),
 ];
 
 /**
