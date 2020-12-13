@@ -1,5 +1,5 @@
 module.exports = (test) => {
-  // Numberic Literial
+  // Numeric Literial
   test('42;', {
     type: 'Program',
     body: [

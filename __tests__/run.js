@@ -9,10 +9,10 @@ const parser = new Parser();
  * List of tests
  */
 const tests = [
-  require('./literal-tests.js'),
+  /* require('./literal-tests.js'),
   require('./statement-list.tests'),
   require('./block-tests.js'),
-  require('./empty-tests.js'),
+  require('./empty-tests.js'), */
   require('./math-tests.js'),
 ];
 
@@ -21,10 +21,7 @@ const tests = [
  */
 function exec() {
   const program = `
-        /**
-         * Hello World
-         */
-        "Hello Back";
+        (2 + 2) * 3;
     `;
   const ast = parser.parse(program);
 

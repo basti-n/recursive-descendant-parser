@@ -15,13 +15,16 @@ const specs = [
   [';', /^;/],
   ['{', /^\{/],
   ['}', /^\}/],
+  ['(', /^\(/],
+  [')', /^\)/],
 
   ['NUMBER', /^\d+/],
   ['STRING', /^"[^"]*"/],
   ['STRING', /^'[^']*'/],
 
   // Math Operators
-  ['ADDITIVE_OPERATOR', /^[+\-]/]
+  ['ADDITIVE_OPERATOR', /^[+\-]/],
+  ['MULTIPLICATIVE_OPERATOR', /^[*\/]/],
 ];
 
 /**

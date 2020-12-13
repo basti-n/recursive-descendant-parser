@@ -43,10 +43,10 @@ class Parser {
    *  : Statement
    *  | StatementList Statement
    */
-  StatementList() {
+  StatementList(stopLookAhead = null) {
     const statementList = [this.Statement()];
 
-    while (this._lookahead != null) {
+    while (this._lookahead != null && this._lookahead.type !== stopLookAhead) {
       statementList.push(this.Statement());
     }
 
@@ -55,10 +55,50 @@ class Parser {
 
   /**
    * Statement
-   *  : ExpressionStatement
+   *  | ExpressionStatement
+   *  : BlockStatement
+   *  ; EmptyStatement
    */
   Statement() {
-    return this.ExpressionStatement();
+    switch (this._lookahead.type) {
+      case ';':
+        return this.EmptyStatement();
+
+      case '{':
+        return this.BlockStatement();
+
+      default:
+        return this.ExpressionStatement();
+    }
+  }
+
+  /**
+   * EmptyStatement
+   *  : ';'
+   */
+  EmptyStatement() {
+    this._eat(';');
+
+    return {
+      type: 'EmptyStatement',
+    };
+  }
+
+  /**
+   * BlockStatement
+   *  : '{' OptStatementList '}'
+   */
+  BlockStatement() {
+    this._eat('{');
+
+    const body = this._lookahead.type !== '}' ? this.StatementList('}') : [];
+
+    this._eat('}');
+
+    return {
+      type: 'BlockStatement',
+      body,
+    };
   }
 
   /**
@@ -87,13 +127,31 @@ class Parser {
    *  |AdditiveLiteral ADDITIVE_OPERATOR Literal
    */
   AdditiveExpression() {
-    let left = this.Literal();
+    return this._GenericBinaryExpression(
+      'MultiplicativeExpression',
+      'ADDITIVE_OPERATOR'
+    );
+  }
 
-    while (this._lookahead.type === 'ADDITIVE_OPERATOR') {
-      // operator +, -
-      const operator = this._eat('ADDITIVE_OPERATOR').value;
+  /**
+   * MultiplicateExpression
+   *  :PrimaryExpression
+   */
+  MultiplicativeExpression() {
+    return this._GenericBinaryExpression(
+      'PrimaryExpression',
+      'MULTIPLICATIVE_OPERATOR'
+    );
+  }
 
-      const right = this.Literal();
+  _GenericBinaryExpression(buildCommand, operatorType) {
+    let left = this[buildCommand]();
+
+    while (this._lookahead.type === operatorType) {
+      // operator *, /, +, -
+      const operator = this._eat(operatorType).value;
+
+      const right = this[buildCommand]();
 
       left = {
         type: 'BinaryExpression',
@@ -107,12 +165,36 @@ class Parser {
   }
 
   /**
+   * PrimaryExpression
+   *  | Literal
+   */
+  PrimaryExpression() {
+    switch (this._lookahead.type) {
+      case '(':
+        return this.ParenthesizedExpression();
+      default:
+        return this.Literal();
+    }
+  }
+
+  /**
+   * Parenthesized Expression
+   *  | '(' Expression ')'
+   */
+  ParenthesizedExpression() {
+    this._eat('(');
+    const expression = this.Expression();
+    this._eat(')');
+
+    return expression;
+  }
+
+  /**
    * Literal
    *  | StringLiteral
    *  : Numberliteral
    */
   Literal() {
-    console.log(this._lookahead.type, this._lookahead, this._string);
     switch (this._lookahead.type) {
       case 'NUMBER':
         return this.NumericLiteral();
