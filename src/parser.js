@@ -1,4 +1,5 @@
 const { Tokenizer } = require('./tokenizer');
+const DefaultASTFactory = require('./ast.factory');
 
 /**
  * Implementation: Letter Parser - Recursive Descent Parser
@@ -35,7 +36,7 @@ class Parser {
    *    : StatementList
    */
   Program() {
-    return { type: 'Program', body: this.StatementList() };
+    return DefaultASTFactory.Program(this.StatementList());
   }
 
   /**
@@ -79,9 +80,7 @@ class Parser {
   EmptyStatement() {
     this._eat(';');
 
-    return {
-      type: 'EmptyStatement',
-    };
+    return DefaultASTFactory.EmptyStatement();
   }
 
   /**
@@ -95,10 +94,7 @@ class Parser {
 
     this._eat('}');
 
-    return {
-      type: 'BlockStatement',
-      body,
-    };
+    return DefaultASTFactory.BlockStatement(body);
   }
 
   /**
@@ -108,10 +104,7 @@ class Parser {
   ExpressionStatement() {
     const expression = this.Expression();
     this._eat(';');
-    return {
-      type: 'ExpressionStatement',
-      expression,
-    };
+    return DefaultASTFactory.ExpressionStatement(expression);
   }
 
   /**
@@ -153,12 +146,7 @@ class Parser {
 
       const right = this[buildCommand]();
 
-      left = {
-        type: 'BinaryExpression',
-        operator,
-        left,
-        right,
-      };
+      left = DefaultASTFactory.BinaryExpression(operator, left, right);
     }
 
     return left;
@@ -213,10 +201,7 @@ class Parser {
    */
   StringLiteral() {
     const token = this._eat('STRING');
-    return {
-      type: 'StringLiteral',
-      value: token.value.slice(1, -1),
-    };
+    return DefaultASTFactory.StringLiteral(token);
   }
 
   /**
@@ -225,10 +210,7 @@ class Parser {
    */
   NumericLiteral() {
     const token = this._eat('NUMBER');
-    return {
-      type: 'NumericLiteral',
-      value: Number(token.value),
-    };
+    return DefaultASTFactory.NumericLiteral(token);
   }
 
   /**
